@@ -10,9 +10,13 @@ namespace MainGame
         [SerializeField] private CinemachineVirtualCamera playerFollowCamera;
         [SerializeField] private CinemachineVirtualCamera playerAimCamera;
 
+        public Camera mainCamera { get; private set; }
+
         protected override void Awake()
         {
             base.Awake();
+
+            mainCamera = Camera.main;
 
             EventManager.Instance.onPlayerStartedAiming += SwitchToAimCamera;
             EventManager.Instance.onPlayerStoppedAiming += SwitchToFollowCamera;
