@@ -9,6 +9,7 @@ namespace MainGame
     {
         public Action onPlayerStartedAiming;
         public Action onPlayerStoppedAiming;
+        public Action onPlayerPulledTheTrigger;
 
         public void OnPlayerStartedAiming()
         {
@@ -18,6 +19,11 @@ namespace MainGame
         public void OnPlayerStoppedAiming()
         {
             onPlayerStoppedAiming?.Invoke();
+        }
+
+        public void OnPlayerPulledTheTrigger()
+        {
+            onPlayerPulledTheTrigger?.Invoke();
         }
     }
 }

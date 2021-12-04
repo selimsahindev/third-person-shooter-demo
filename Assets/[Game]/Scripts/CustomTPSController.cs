@@ -37,10 +37,23 @@ namespace MainGame
 
         private void Update()
         {
+            HandlePlayerInput();
             HandleMovement();
             HandleRotation();
             HandleRaycast();
+        }
 
+        private void LateUpdate()
+        {
+            HandleCameraRotation();
+        }
+
+        private void HandlePlayerInput()
+        {
+            if (Input.GetMouseButtonDown(0) && isAiming)
+            {
+                Fire();
+            }
             if (Input.GetMouseButtonDown(1))
             {
                 SetAim(true);
@@ -51,24 +64,28 @@ namespace MainGame
             }
         }
 
-        private void LateUpdate()
+        private void Fire()
         {
-            HandleCameraRotation();
+            EventManager.Instance.OnPlayerPulledTheTrigger();
         }
 
         private void HandleRotation()
         {
-            if (isAiming)
+            if (isAiming || !isAiming && input.sqrMagnitude > 0.005f)
             {
-                // Look towards the raycast hit if it exists.
-                // Otherwise look towards the same direction with the camera.
-                RotateToPosition(hit.transform != null ? hit.point : cameraFollowTarget.forward);
-            }
-            else if (input.sqrMagnitude > 0.005f)
-            {
-                // Look towards the same direction with the camera when player moves while not aiming.
+                // Look towards the same direction with the camera
                 RotateToPosition(cameraFollowTarget.forward);
             }
+        }
+
+        private void RotateToPosition(Vector3 lookPos)
+        {
+            lookPos.y = 0f;
+
+            Vector3 lookTarget = transform.position + lookPos;
+            Vector3 aimDirection = (lookTarget - transform.position).normalized;
+
+            transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 25f);
         }
 
         private void HandleRaycast()
@@ -97,16 +114,6 @@ namespace MainGame
             transform.position = Vector3.Lerp(transform.position, transform.position + pos * moveSpeed, Time.deltaTime);
 
             animator.SetFloat("Velocity", input.magnitude);
-        }
-
-        private void RotateToPosition(Vector3 lookPos)
-        {
-            lookPos.y = 0f;
-
-            Vector3 lookTarget = transform.position + lookPos;
-            Vector3 aimDirection = (lookTarget - transform.position).normalized;
-
-            transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
         }
 
         private void HandleCameraRotation()

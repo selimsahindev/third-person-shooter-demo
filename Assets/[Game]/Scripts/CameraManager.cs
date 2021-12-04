@@ -8,7 +8,10 @@ namespace MainGame
     public class CameraManager : SingletonBehaviour<CameraManager>
     {
         [SerializeField] private CinemachineVirtualCamera playerFollowCamera;
+        public CinemachineVirtualCamera PlayerFollowCamera => playerFollowCamera;
+
         [SerializeField] private CinemachineVirtualCamera playerAimCamera;
+        public CinemachineVirtualCamera PlayerAimCamera => playerAimCamera;
 
         public Camera mainCamera { get; private set; }
 
