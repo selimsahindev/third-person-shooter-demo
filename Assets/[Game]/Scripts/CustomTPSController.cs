@@ -16,7 +16,7 @@ namespace MainGame
         [SerializeField] private float pitchMax = 70f;
         [Tooltip("Minimum pitch value (rotate down on x axis) of the camera")]
         [SerializeField] private float pitchMin = -30f;
-        [SerializeField] private float recoil = 0.5f; 
+        [SerializeField] private float recoil = 0.25f; 
         [SerializeField] private Transform debugTransform;
         [SerializeField] private LayerMask aimLayerMask = new LayerMask();
  
@@ -86,7 +86,9 @@ namespace MainGame
         private void OnWeaponIsFired()
         {
             PlayBulletImpact();
-            targetPitch -= recoil * Random.Range(0.3f, 1.1f);
+
+            // Apply recoil
+            targetPitch -= recoil * Random.Range(0.25f, 1f);
         }
 
         private void PlayBulletImpact()
