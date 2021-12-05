@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 517680963367253171}
   - component: {fileID: 5803623033867096112}
   - component: {fileID: 122671522662302917}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 5999793609967954559}
   - component: {fileID: 157403583946017763}
   - component: {fileID: 4710703715155760616}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: EmptyShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 6759236887961561459}
   - component: {fileID: 5204431405528643976}
   - component: {fileID: 8863202055851321894}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BottomNotch
   m_TagString: Untagged
   m_Icon: {fileID: 0}

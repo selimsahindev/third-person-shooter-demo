@@ -6,6 +6,7 @@ namespace MainGame
 {
     public class RifleController : MonoBehaviour
     {
+        [SerializeField] private ParticleSystem fireParticle;
         [SerializeField] private Transform shellExitPoint;
 
         private Cinemachine.CinemachineImpulseSource impulseSource;
@@ -20,9 +21,16 @@ namespace MainGame
         private void Fire()
         {
             DischargeEmptyShell();
+            PlayFireParticle();
 
             // Generate impulse for virtual cameras in the scene
             impulseSource.GenerateImpulse(CameraManager.Instance.mainCamera.transform.forward);
+        }
+
+        private void PlayFireParticle()
+        {
+            fireParticle.transform.localRotation = Quaternion.Euler(Random.Range(0f, 45f), -90f, 0f);
+            fireParticle.Play();
         }
 
         private void DischargeEmptyShell()
@@ -31,7 +39,7 @@ namespace MainGame
 
             shellRb.transform.SetParent(null);
             shellRb.gameObject.SetActive(true);
-            shellRb.transform.localScale = Vector3.one * 0.06f;
+            shellRb.transform.localScale = Vector3.one * 0.075f;
             shellRb.transform.position = shellExitPoint.position;
             shellRb.transform.rotation = shellExitPoint.rotation * Quaternion.Euler(90f, 0f, 0f);
 
