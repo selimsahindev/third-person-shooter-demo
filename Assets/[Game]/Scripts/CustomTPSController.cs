@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
+using Random = UnityEngine.Random;
 
 namespace MainGame
 {
@@ -14,10 +16,12 @@ namespace MainGame
         [SerializeField] private float pitchMax = 70f;
         [Tooltip("Minimum pitch value (rotate down on x axis) of the camera")]
         [SerializeField] private float pitchMin = -30f;
+        [SerializeField] private float recoil = 0.5f; 
         [SerializeField] private Transform debugTransform;
         [SerializeField] private LayerMask aimLayerMask = new LayerMask();
  
         private bool isAiming = false;
+        private bool isPullingTheTrigger = false;
         private float targetYaw;
         private float targetPitch;
         private Vector3 input;
@@ -31,6 +35,7 @@ namespace MainGame
 
             EventManager.Instance.onPlayerStartedAiming += OnStartedAiming;
             EventManager.Instance.onPlayerStoppedAiming += OnStoppedAiming;
+            EventManager.Instance.onWeaponIsFired += OnWeaponIsFired;
 
             Cursor.visible = false;
         }
@@ -52,21 +57,60 @@ namespace MainGame
         {
             if (Input.GetMouseButtonDown(0) && isAiming)
             {
-                Fire();
+                if (!isPullingTheTrigger) PullTheTrigger();
             }
+
+            if (Input.GetMouseButtonUp(0) && isAiming)
+            {
+                if (isPullingTheTrigger) ReleaseTrigger();
+            }
+
             if (Input.GetMouseButtonDown(1))
             {
                 SetAim(true);
             }
+
             if (Input.GetMouseButtonUp(1))
             {
                 SetAim(false);
+
+                if (isPullingTheTrigger) ReleaseTrigger();
+            }
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                EventManager.Instance.OnWeaponModeChanged();
             }
         }
 
-        private void Fire()
+        private void OnWeaponIsFired()
         {
+            PlayBulletImpact();
+            targetPitch -= recoil * Random.Range(0.3f, 1.1f);
+        }
+
+        private void PlayBulletImpact()
+        {
+            ParticleSystem impact = GameManager.Instance.DirtImpactPool.Pop();
+
+            impact.transform.SetParent(null);
+            impact.gameObject.SetActive(true);
+            impact.transform.position = hit.point;
+            impact.Play();
+
+            StartCoroutine(Delay(3f, () => GameManager.Instance.DirtImpactPool.Push(impact)));
+        }
+
+        private void PullTheTrigger()
+        {
+            isPullingTheTrigger = true;
             EventManager.Instance.OnPlayerPulledTheTrigger();
+        }
+
+        private void ReleaseTrigger()
+        {
+            isPullingTheTrigger = false;
+            EventManager.Instance.OnPlayerReleasedTheTrigger();
         }
 
         private void HandleRotation()
@@ -161,6 +205,12 @@ namespace MainGame
             if (angle < -360f) angle += 360f;
             if (angle > 360f) angle -= 360f;
             return Mathf.Clamp(angle, min, max);
+        }
+
+        private IEnumerator Delay(float time, System.Action onComplete)
+        {
+            yield return new WaitForSeconds(time);
+            onComplete.Invoke();
         }
     }
 }

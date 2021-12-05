@@ -10,6 +10,9 @@ namespace MainGame
         public Action onPlayerStartedAiming;
         public Action onPlayerStoppedAiming;
         public Action onPlayerPulledTheTrigger;
+        public Action onPlayerReleasedTheTrigger;
+        public Action onWeaponModeChanged;
+        public Action onWeaponIsFired;
 
         public void OnPlayerStartedAiming()
         {
@@ -24,6 +27,21 @@ namespace MainGame
         public void OnPlayerPulledTheTrigger()
         {
             onPlayerPulledTheTrigger?.Invoke();
+        }
+
+        public void OnPlayerReleasedTheTrigger()
+        {
+            onPlayerReleasedTheTrigger?.Invoke();
+        }
+
+        public void OnWeaponModeChanged()
+        {
+            onWeaponModeChanged?.Invoke();
+        }
+
+        public void OnWeaponIsFired()
+        {
+            onWeaponIsFired?.Invoke();
         }
     }
 }
