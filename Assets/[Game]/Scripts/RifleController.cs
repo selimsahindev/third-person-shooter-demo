@@ -6,6 +6,8 @@ namespace MainGame
 {
     public class RifleController : MonoBehaviour
     {
+        [SerializeField] private Transform shellExitPoint;
+
         private Cinemachine.CinemachineImpulseSource impulseSource;
 
         private void Awake()
@@ -17,13 +19,37 @@ namespace MainGame
 
         private void Fire()
         {
+            DischargeEmptyShell();
+
             // Generate impulse for virtual cameras in the scene
             impulseSource.GenerateImpulse(CameraManager.Instance.mainCamera.transform.forward);
+        }
+
+        private void DischargeEmptyShell()
+        {
+            Rigidbody shellRb = GameManager.Instance.ShellPool.Pop().GetComponent<Rigidbody>();
+
+            shellRb.transform.SetParent(null);
+            shellRb.gameObject.SetActive(true);
+            shellRb.transform.localScale = Vector3.one * 0.06f;
+            shellRb.transform.position = shellExitPoint.position;
+            shellRb.transform.rotation = shellExitPoint.rotation * Quaternion.Euler(90f, 0f, 0f);
+
+            shellRb.AddForce(transform.right * 2f + transform.up + transform.forward * 1.4f, ForceMode.VelocityChange);
+            shellRb.AddTorque(new Vector3(Random.Range(0f, 1f), 0f, Random.Range(-1f, 1f)));
+
+            StartCoroutine(Delay(10f, () => GameManager.Instance.ShellPool.Push(shellRb.gameObject)));
         }
 
         private void OnDestroy()
         {
             EventManager.Instance.onPlayerPulledTheTrigger -= Fire;
+        }
+
+        private IEnumerator Delay(float time, System.Action onComplete)
+        {
+            yield return new WaitForSeconds(time);
+            onComplete.Invoke();
         }
     }
 }
