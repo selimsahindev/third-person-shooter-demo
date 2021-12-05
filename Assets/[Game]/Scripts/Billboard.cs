@@ -21,7 +21,7 @@ namespace MainGame
             //labelText.transform.DOLocalRotate();
         }
 
-        private void UpdateBulletCount()
+        private void UpdateBulletCount(BulletType type)
         {
             bulletCount++;
             bulletCountText.text = bulletCount.ToString();

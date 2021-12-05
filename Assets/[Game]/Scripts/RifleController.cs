@@ -11,6 +11,11 @@ namespace MainGame
         Auto, SemiAuto, Multiple
     }
 
+    public enum BulletType
+    {
+        Standard, Explosive, Massive, Red
+    }
+
     public class RifleController : MonoBehaviour
     {
         [SerializeField] private ParticleSystem fireParticle;
@@ -18,6 +23,8 @@ namespace MainGame
         [Tooltip("Cooldown between two consecutive shots.")]
         [SerializeField] private float fireRate = 0.1f;
         [SerializeField] private WeaponMode mode = WeaponMode.Auto;
+        [SerializeField] private BulletType bulletType = BulletType.Standard;
+        public GameObject massiveBullet;
 
         private Cinemachine.CinemachineImpulseSource impulseSource;
         private Coroutine shootingCoroutine;
@@ -29,21 +36,47 @@ namespace MainGame
             EventManager.Instance.onPlayerPulledTheTrigger += StartFire;
             EventManager.Instance.onPlayerReleasedTheTrigger += StopFire;
             EventManager.Instance.onWeaponModeChanged += ChangeMode;
+            EventManager.Instance.onBulletTypeChanged += ChangeBulletType;
         }
 
         private void ChangeMode()
         {
             int maxEnumValue = Convert.ToInt32(Enum.GetValues(typeof(WeaponMode)).Cast<WeaponMode>().Last());
-            mode = (WeaponMode)((Convert.ToInt32(mode) + 1) % maxEnumValue);
+            mode = (WeaponMode)((Convert.ToInt32(mode) + 1) % (maxEnumValue + 1));
+
+            UIManager.Instance.SetWeaponModeText(mode);
+        }
+
+        private void ChangeBulletType()
+        {
+            int maxEnumValue = Convert.ToInt32(Enum.GetValues(typeof(BulletType)).Cast<WeaponMode>().Last());
+            bulletType = (BulletType)((Convert.ToInt32(bulletType) + 1) % (maxEnumValue + 1));
+
+            UIManager.Instance.SetBulletTypeText(bulletType);
         }
 
         private void StartFire()
         {
-            if (mode == WeaponMode.Auto && shootingCoroutine == null)
+            if (mode == WeaponMode.Auto)
             {
-                shootingCoroutine = StartCoroutine(FireCoroutine());
+                if (shootingCoroutine == null)
+                {
+                    shootingCoroutine = StartCoroutine(FireCoroutine());
+                }
             }
-            if (mode == WeaponMode.SemiAuto)
+            else if (mode == WeaponMode.SemiAuto)
+            {
+                Fire();
+            }
+            else if (mode == WeaponMode.Multiple)
+            {
+                BurstFire();
+            }
+        }
+
+        private void BurstFire()
+        {
+            for (int i = 0; i < 5; i++)
             {
                 Fire();
             }

@@ -19,6 +19,7 @@ namespace MainGame
         [SerializeField] private float recoil = 0.25f; 
         [SerializeField] private Transform debugTransform;
         [SerializeField] private LayerMask aimLayerMask = new LayerMask();
+        [SerializeField] private RifleController rifle;
  
         private bool isAiming = false;
         private bool isPullingTheTrigger = false;
@@ -81,13 +82,29 @@ namespace MainGame
             {
                 EventManager.Instance.OnWeaponModeChanged();
             }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                EventManager.Instance.OnBulletTypeChanged();
+            }
         }
 
-        private void OnWeaponIsFired()
+        private void OnWeaponIsFired(BulletType type)
         {
             PlayBulletImpact();
 
+            //if (type == BulletType.Massive)
+            //{
+            //    Transform massive = rifle.massiveBullet.transform;
+            //    massive.gameObject.SetActive(true);
+            //    massive.SetParent(null);
+            //    massive.DOJump(hit.point, 2f, 1, Vector3.Distance(massive.position, hit.point) * 0.3f).OnComplete(() => {
+            //        massive.GetComponent<MassiveBullet>().Reload();
+            //    });
+            //}
+
             // Apply recoil
+            // Multiply by 5 if the current weapon mode is set to multiple
             targetPitch -= recoil * Random.Range(0.25f, 1f);
         }
 

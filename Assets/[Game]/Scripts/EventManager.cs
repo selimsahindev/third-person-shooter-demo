@@ -12,7 +12,8 @@ namespace MainGame
         public Action onPlayerPulledTheTrigger;
         public Action onPlayerReleasedTheTrigger;
         public Action onWeaponModeChanged;
-        public Action onWeaponIsFired;
+        public Action onBulletTypeChanged;
+        public Action<BulletType> onWeaponIsFired;
 
         public void OnPlayerStartedAiming()
         {
@@ -39,9 +40,14 @@ namespace MainGame
             onWeaponModeChanged?.Invoke();
         }
 
-        public void OnWeaponIsFired()
+        public void OnBulletTypeChanged()
         {
-            onWeaponIsFired?.Invoke();
+            onBulletTypeChanged?.Invoke();
+        }
+
+        public void OnWeaponIsFired(BulletType type = BulletType.Standard)
+        {
+            onWeaponIsFired?.Invoke(type);
         }
     }
 }
